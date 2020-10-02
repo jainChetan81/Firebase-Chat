@@ -1,15 +1,17 @@
 import React, { Component } from "react";
 import firebase from "../../firebase";
-import { Dropdown, Grid, Header, Icon } from "semantic-ui-react";
+import { Dropdown, Grid, Header, Icon, Image } from "semantic-ui-react";
+import { connect } from "react-redux";
 
 class UserPanel extends Component {
-    state = {};
+    state = { user: null };
     dropDownOptions = () => [
         {
             key: "user",
             text: (
                 <span>
-                    Signed in as <strong>User</strong>
+                    Signed in as
+                    <strong> {this.props.currentUser?.displayName}</strong>
                 </span>
             ),
             disabled: true,
@@ -31,6 +33,7 @@ class UserPanel extends Component {
     };
 
     render() {
+        const { currentUser } = this.props;
         return (
             <Grid style={{ background: "#4c3c4c", fontSize: "1.2rem" }}>
                 <Grid.Column>
@@ -43,7 +46,16 @@ class UserPanel extends Component {
                     {/* User Dropdown */}
                     <Header style={{ padding: "0.25rem" }} as="h3" inverted>
                         <Dropdown
-                            trigger={<span>User</span>}
+                            trigger={
+                                <span>
+                                    <Image
+                                        src={currentUser?.photoURL}
+                                        spaced="right"
+                                        avatar
+                                    />
+                                    {currentUser?.displayName}
+                                </span>
+                            }
                             options={this.dropDownOptions()}
                         />
                     </Header>
@@ -52,5 +64,8 @@ class UserPanel extends Component {
         );
     }
 }
+const mapStateToProps = (state) => ({
+    currentUser: state.user.currentUser,
+});
 
-export default UserPanel;
+export default connect(mapStateToProps)(UserPanel);
