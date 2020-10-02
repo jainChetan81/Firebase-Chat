@@ -5,3 +5,8 @@ export const setUser = (user) => {
         currentUser: user,
     };
 };
+export const clearUser = () => {
+    return {
+        type: actionTypes.ClEAR_USER,
+    };
+};
