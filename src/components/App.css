@@ -1,5 +1,6 @@
+html,
+body,
 .app {
-    text-align: center;
     height: 100vh;
     background: #eee;
     padding: 1em;
