@@ -19,7 +19,7 @@ class Channels extends Component {
         modal: false,
         channelName: "",
         channelDetails: "",
-        channelRef: firebase.database().ref("channel"),
+        channelsRef: firebase.database().ref("channel"),
         errors: [],
         loading: false,
     };
@@ -30,14 +30,14 @@ class Channels extends Component {
     componentWillUnmount() {
         this.removeListeners();
     }
-    
+
     removeListeners = () => {
         this.state.channelsRef.off();
     };
 
     addListeners = () => {
         let loadedChannels = [];
-        this.state.channelRef.on("child_added", (snap) => {
+        this.state.channelsRef.on("child_added", (snap) => {
             loadedChannels.push(snap.val());
             this.setState({ channels: [...loadedChannels] }, () =>
                 this.setFirstChannel()
@@ -55,8 +55,8 @@ class Channels extends Component {
     };
 
     addChannel = () => {
-        const { channelRef, channelName, channelDetails } = this.state;
-        const key = channelRef.push().key;
+        const { channelsRef, channelName, channelDetails } = this.state;
+        const key = channelsRef.push().key;
         const newChannel = {
             id: key,
             name: channelName,
@@ -66,7 +66,7 @@ class Channels extends Component {
                 avatar: this.props.currentUser.photoURL,
             },
         };
-        channelRef
+        channelsRef
             .child(key)
             .update(newChannel)
             .then(() => {
