@@ -9,7 +9,7 @@ body,
     height: 440px;
     overflow-y: scroll;
 }
-
+/* message form */
 .message__form {
     position: fixed !important;
     bottom: 1em;
@@ -17,4 +17,10 @@ body,
     left: 0;
     right: 1em;
     z-index: 200;
+}
+
+/* message self */
+.message__self {
+    border-left: 2px solid orange;
+    padding-left: 8px;
 }
