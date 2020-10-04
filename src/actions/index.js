@@ -5,3 +5,13 @@ export const setUser = (user) => {
         currentUser: user,
     };
 };
+export const clearUser = () => {
+    return {
+        type: actionTypes.ClEAR_USER,
+    };
+};
+
+//channet action creators
+export const setCurrentChannel = (channel) => {
+    return { type: actionTypes.SET_CURRENT_CHANNEL, currentChannel: channel };
+};
