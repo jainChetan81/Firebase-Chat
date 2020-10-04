@@ -17,4 +17,3 @@ function ColorPanel() {
 }
 
 export default ColorPanel;
- 

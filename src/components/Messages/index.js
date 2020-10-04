@@ -11,6 +11,7 @@ class Messages extends Component {
         messagesRef: firebase.database().ref("messages"),
         messages: [],
         messagesLoading: true,
+        progressBar: false,
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -28,37 +29,42 @@ class Messages extends Component {
                 messages: [...loadedMessages],
                 messagesLoading: false,
             });
-            console.log("loadedMessages", loadedMessages);
         });
     };
 
     displayMessages = (messages) => {
         return (
             messages.length > 0 &&
-            messages.map((message) => (
+            messages.map((message, index) => (
                 <Message
-                    key={message.timestamp}
+                    style={{ width: "100%" }}
+                    key={index}
                     message={message}
                     user={this.props.currentUser}
                 />
             ))
         );
     };
+    isProgresBarVisible = (percent) => {
+        if (percent > 0) this.setState({ progressBar: true });
+    };
 
     render() {
-        const { messagesRef, messages, messagesLoading } = this.state;
+        const { messagesRef, messages, progressBar } = this.state;
         return (
             <Fragment>
                 <MessagesHeader />
                 <Segment>
-                    <Comment.Group className="messages">
+                    <Comment.Group
+                        className={
+                            progressBar ? "messages__progress" : "messages"
+                        }>
                         {this.displayMessages(messages)}
                     </Comment.Group>
                 </Segment>
                 <MessageForm
                     messagesRef={messagesRef}
-                    channel={this.props.channel}
-                    user={this.props.currentUser}
+                    isProgresBarVisible={this.isProgresBarVisible}
                 />
             </Fragment>
         );
