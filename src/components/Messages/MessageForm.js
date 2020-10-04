@@ -172,7 +172,6 @@ class MessageForm extends Component {
                 <Button.Group icon widths="2">
                     <Button
                         onClick={this.sendMessage}
-                        disabled={uploadState === "uploading"}
                         labelPosition="left"
                         disabled={loading}
                         icon="edit"
@@ -181,6 +180,7 @@ class MessageForm extends Component {
                     />
                     <Button
                         onClick={this.openModal}
+                        disabled={uploadState === "uploading"}
                         labelPosition="right"
                         icon="cloud upload"
                         color="teal"
