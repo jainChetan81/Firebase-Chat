@@ -1,35 +1,47 @@
+html,
+body,
 .app {
-    text-align: center;
     height: 100vh;
     background: #eee;
     padding: 1em;
 }
 
-.App-logo {
-    animation: App-logo-spin infinite 20s linear;
-    height: 80px;
+/* Messages.js */
+.messages {
+    height: 440px;
+    /* box-sizing: border-box !important; */
+    /* position: relative !important;
+    left: 0;
+    width: auto !important; */
+    /* margin-left: auto !important; */
+    /* TODO:Fix this */
+    overflow-y: scroll;
+}
+.messages__progress {
+    height: 62vh;
+    overflow-y: scroll;
+}
+/* MessageForm.js */
+.message__form {
+    position: fixed !important;
+    bottom: 1em;
+    margin-left: 320px !important;
+    left: 0;
+    right: 1em;
+    z-index: 200;
 }
 
-.App-header {
-    background-color: #222;
-    height: 150px;
-    padding: 20px;
-    color: white;
+/* Message.js */
+.message__self {
+    border-left: 2px solid orange;
+    padding-left: 8px;
 }
 
-.App-title {
-    font-size: 1.5em;
+.message__image {
+    padding: 1em;
 }
 
-.App-intro {
-    font-size: large;
-}
-
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* ProgressBar.js */
+.progress__bar {
+    margin: 0.3em 0 0 0 !important;
 }
