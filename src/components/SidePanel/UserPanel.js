@@ -4,7 +4,6 @@ import { Dropdown, Grid, Header, Icon, Image } from "semantic-ui-react";
 import { connect } from "react-redux";
 
 class UserPanel extends Component {
-    state = { user: null };
     dropDownOptions = () => [
         {
             key: "user",
