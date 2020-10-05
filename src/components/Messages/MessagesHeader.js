@@ -4,7 +4,7 @@ import { Header, Icon, Input, Segment } from "semantic-ui-react";
 class MessagesHeader extends Component {
     render() {
         //prettier-ignore
-        const { displayChannelName, handleSearchChange, numUniqueUsers ,searchLoading} = this.props;
+        const { displayChannelName, handleSearchChange, numUniqueUsers ,searchLoading,isPrivateChannel} = this.props;
         return (
             <Segment clearing>
                 <Header
@@ -14,7 +14,11 @@ class MessagesHeader extends Component {
                     style={{ marginBottom: 0 }}>
                     <span>
                         {displayChannelName()} {"  "}
-                        <Icon name={"star outline"} color="black" />
+                        {isPrivateChannel ? (
+                            ""
+                        ) : (
+                            <Icon name={"star outline"} color="black" />
+                        )}
                     </span>
                     <Header.Subheader>{numUniqueUsers}</Header.Subheader>
                 </Header>

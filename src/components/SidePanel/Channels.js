@@ -10,7 +10,7 @@ import {
     Modal,
 } from "semantic-ui-react";
 import firebase from "../../firebase";
-import { setCurrentChannel } from "../../actions";
+import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
 class Channels extends Component {
     state = {
@@ -51,6 +51,7 @@ class Channels extends Component {
     };
     changeChannel = (channel) => {
         this.props.setCurrentChannel(channel);
+        this.props.setPrivateChannel(false);
         this.setState({ activeChannel: channel.id });
     };
 
@@ -225,4 +226,7 @@ const mapStateToProps = (state) => ({
     currentUser: state.user.currentUser,
 });
 
-export default connect(mapStateToProps, { setCurrentChannel })(Channels);
+export default connect(mapStateToProps, {
+    setCurrentChannel,
+    setPrivateChannel,
+})(Channels);
