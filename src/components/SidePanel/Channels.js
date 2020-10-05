@@ -5,6 +5,7 @@ import {
     Form,
     Icon,
     Input,
+    Label,
     Menu,
     Message,
     Modal,
@@ -20,6 +21,8 @@ class Channels extends Component {
         channelName: "",
         channelDetails: "",
         channelsRef: firebase.database().ref("channel"),
+        messagesRef: firebase.database().ref("messages"),
+        notifications: [],
         errors: [],
         loading: false,
     };
@@ -42,17 +45,81 @@ class Channels extends Component {
             this.setState({ channels: [...loadedChannels] }, () =>
                 this.setFirstChannel()
             );
+            this.addNotificationListener(snap.key);
         });
     };
+
+    addNotificationListener = (channelID) => {
+        this.state.messagesRef.child(channelID).on("value", (snap) => {
+            if (this.props.channel) {
+                this.handleNotifications(
+                    channelID,
+                    this.props.channel.id,
+                    this.state.notifications,
+                    snap
+                );
+            }
+        });
+    };
+
+    //prettier-ignore
+    handleNotifications = (channelID, currentChannelID, notifications, snap) => {
+        let lastTotal = 0;
+        let index = notifications.findIndex(
+            (notification) => notification.id === channelID
+        );
+        if (index !== -1) {
+            if (channelID !== currentChannelID) {
+                lastTotal = notifications[index].total;
+                if (snap.numChildren() - lastTotal > 0) {
+                    notifications[index].count = snap.numChildren() - lastTotal;
+                }
+            }
+            notifications[index].lastKnownTotal = snap.numChildren();
+        } else {
+            notifications.push({
+                id: channelID,
+                total: snap.numChildren(),
+                lastKnownTotal: snap.numChildren(),
+                count: 0,
+            });
+        }
+        this.setState({ notifications });
+    };
+
+    getNotificationCount = (channel) => {
+        let count = 0;
+        this.state.notifications.forEach((notification) => {
+            if (notification.id === channel.id) {
+                count = notification.count;
+            }
+        });
+        if (count > 0) return count;
+    };
+
     setFirstChannel = () => {
         if (this.state.channels.length > 0) {
             this.changeChannel(this.state.channels[0]);
         }
     };
     changeChannel = (channel) => {
-        this.props.setCurrentChannel(channel);
+        this.props.setCurrentChannel(channel); //set current channel
+        this.clearNotifications();
         this.props.setPrivateChannel(false);
-        this.setState({ activeChannel: channel.id });
+        this.setState({ activeChannel: channel.id, channel }); //set active channel
+    };
+
+    clearNotifications = () => {
+        let index = this.state.notifications.findIndex(
+            (notification) => notification.id === this.props.channel.id
+        );
+        if (index !== -1) {
+            let updatedNotifications = [...this.state.notifications];
+            //prettier-ignore
+            updatedNotifications[index].total=this.state.notifications[index].lastKnownTotal
+            updatedNotifications[index].count = 0;
+            this.setState({ notifications: updatedNotifications });
+        }
     };
 
     addChannel = () => {
@@ -95,6 +162,7 @@ class Channels extends Component {
             this.addChannel();
         }
     };
+
     displayChannels = (channels) => {
         return (
             channels.length > 0 &&
@@ -105,6 +173,11 @@ class Channels extends Component {
                     active={channel.id === this.state.activeChannel}
                     style={{ opacity: 0.7 }}
                     onClick={() => this.changeChannel(channel)}>
+                    {this.getNotificationCount(channel) && (
+                        <Label color="red">
+                            {this.getNotificationCount(channel)}
+                        </Label>
+                    )}
                     #{channel.name}
                 </Menu.Item>
             ))
@@ -224,6 +297,7 @@ class Channels extends Component {
 
 const mapStateToProps = (state) => ({
     currentUser: state.user.currentUser,
+    channel: state.channel.currentChannel,
 });
 
 export default connect(mapStateToProps, {
