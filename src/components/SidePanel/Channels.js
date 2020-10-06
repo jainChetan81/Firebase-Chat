@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
+import { setCurrentChannel, setPrivateChannel } from "../../actions";
 import {
     Button,
     Form,
@@ -11,7 +12,6 @@ import {
     Modal,
 } from "semantic-ui-react";
 import firebase from "../../firebase";
-import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
 class Channels extends Component {
     state = {
