@@ -3,7 +3,7 @@ import { Menu } from "semantic-ui-react";
 import UserPanel from "./UserPanel";
 import Channels from "./Channels";
 import DirectMessages from "./DirectMessages";
-import { connect } from "react-redux";
+import StarredComponent from "./StarredComponent";
 
 function SidePanel() {
     return (
@@ -14,14 +14,11 @@ function SidePanel() {
             vertical
             style={{ background: "#4c3c4c", fontSize: "1.2rem" }}>
             <UserPanel />
+            <StarredComponent />
             <Channels />
             <DirectMessages />
         </Menu>
     );
 }
 
-const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
-});
-
-export default connect(mapStateToProps)(SidePanel);
+export default SidePanel;
