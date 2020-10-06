@@ -5,6 +5,7 @@ import MessagesHeader from "./MessagesHeader";
 import firebase from "../../firebase";
 import { connect } from "react-redux";
 import Message from "./Message";
+import { setUserPosts } from "../../actions";
 
 class Messages extends Component {
     state = {
@@ -106,6 +107,7 @@ class Messages extends Component {
                 messagesLoading: false,
             });
             this.countUniqueUsers(loadedMessages);
+            this.countUserPosts(loadedMessages);
         });
         if (flag === 0) {
             this.setState({
@@ -155,6 +157,21 @@ class Messages extends Component {
             plural ? "users" : "user"
         }`;
         this.setState({ numUniqueUsers });
+    };
+
+    countUserPosts = (messages) => {
+        let userPosts = messages.reduce((acc, message) => {
+            if (message.user.name in acc) {
+                acc[message.user.name].count++;
+            } else {
+                acc[message.user.name] = {
+                    avatar: message.user.avatar,
+                    count: 1,
+                };
+            }
+            return acc;
+        }, {});
+        this.props.setUserPosts(userPosts);
     };
 
     displayMessages = (messages) => {
@@ -215,4 +232,4 @@ const mapStateToProps = (state) => ({
     isPrivateChannel: state.channel.isPrivateChannel,
 });
 
-export default connect(mapStateToProps)(Messages);
+export default connect(mapStateToProps, { setUserPosts })(Messages);

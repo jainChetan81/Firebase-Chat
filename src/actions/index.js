@@ -18,3 +18,8 @@ export const setCurrentChannel = (channel) => {
 export const setPrivateChannel = (isPrivateChannel) => {
     return { type: actionTypes.SET_PRIVATE_CHANNEL, isPrivateChannel };
 };
+
+//user post action creators
+export const setUserPosts = (posts) => {
+    return { type: actionTypes.SET_USER_POSTS, posts };
+};
