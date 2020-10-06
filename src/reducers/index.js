@@ -24,6 +24,7 @@ const userReducer = (state = initialUserState, action) => {
 const initialChannelState = {
     currentChannel: null,
     isPrivateChannel: false,
+    currentPost: null,
 };
 
 const channelReducer = (state = initialChannelState, action) => {
@@ -32,10 +33,13 @@ const channelReducer = (state = initialChannelState, action) => {
             return { ...state, currentChannel: action.currentChannel };
         case actionTypes.SET_PRIVATE_CHANNEL:
             return { ...state, isPrivateChannel: action.isPrivateChannel };
+        case actionTypes.SET_USER_POSTS:
+            return { ...state, currentPost: action.posts };
         default:
             return state;
     }
 };
+
 const rootReducer = combineReducers({
     user: userReducer,
     channel: channelReducer,
