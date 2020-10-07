@@ -5,11 +5,12 @@ import ColorPanel from "./ColorPanel";
 import SidePanel from "./SidePanel";
 import Messages from "./Messages";
 import MetaPanel from "./MetaPanel";
+import { connect } from "react-redux";
 
-const App = () => (
-    <Grid columns="equal" className="app" style={{ background: "#eee" }}>
+const App = ({ primary, secondary }) => (
+    <Grid columns="equal" className="app" style={{ background: secondary }}>
         <ColorPanel />
-        <SidePanel />
+        <SidePanel primary={primary} />
         <Grid.Column style={{ marginLeft: 320 }}>
             <Messages />
         </Grid.Column>
@@ -19,4 +20,9 @@ const App = () => (
     </Grid>
 );
 
-export default App;
+const mapStateToProps = (state) => ({
+    primary: state.colors.primary,
+    secondary: state.colors.secondary,
+});
+
+export default connect(mapStateToProps)(App);
