@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import {
     Sidebar,
     Menu,
@@ -10,6 +10,7 @@ import {
     Segment,
 } from "semantic-ui-react";
 import { connect } from "react-redux";
+import { setColors } from "../../actions";
 import { SliderPicker } from "react-color";
 import firebase from "../../firebase";
 class ColorPanel extends Component {
@@ -32,7 +33,6 @@ class ColorPanel extends Component {
 
     addListeners = (userId) => {
         let userColors = [];
-        console.log(userId);
         this.state.usersRef
             .child(`${userId}/colors`)
             .on("child_added", (snap) => {
@@ -49,6 +49,26 @@ class ColorPanel extends Component {
 
     handleChangeSecondary = (color) => this.setState({ secondary: color.hex });
 
+    displayUserColors = (colors) =>
+        colors.length > 0 &&
+        colors.map((color, i) => (
+            <Fragment key={i}>
+                <Divider />
+                <div
+                    className="color__container"
+                    style={{ background: color.primary }}>
+                    <div
+                        className="color__square"
+                        onClick={() =>
+                            this.props.setColors(color.primary, color.secondary)
+                        }>
+                        <div
+                            className="color__overlay"
+                            style={{ background: color.secondary }}></div>
+                    </div>
+                </div>
+            </Fragment>
+        ));
     handleSaveColors = () => {
         const { primary, secondary, usersRef } = this.state;
         if (primary && secondary) {
@@ -68,7 +88,7 @@ class ColorPanel extends Component {
     };
 
     render() {
-        const { modal, primary, secondary } = this.state;
+        const { modal, primary, secondary, userColors } = this.state;
         return (
             <Sidebar
                 as={Menu}
@@ -84,6 +104,8 @@ class ColorPanel extends Component {
                     color="blue"
                     onClick={this.openModal}
                 />
+                {this.displayUserColors(userColors)}
+
                 {/* colorpicker modal */}
                 <Modal basic open={modal} onClose={this.closeModal}>
                     <Modal.Header>Choose App Colors</Modal.Header>
@@ -124,4 +146,4 @@ const mapStateToProps = (state) => ({
     currentUser: state.user.currentUser,
 });
 
-export default connect(mapStateToProps)(ColorPanel);
+export default connect(mapStateToProps, { setColors })(ColorPanel);

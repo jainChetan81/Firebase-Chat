@@ -8,3 +8,6 @@ export const SET_PRIVATE_CHANNEL = "SET_PRIVATE_CHANNEL";
 
 // user posts
 export const SET_USER_POSTS = "SET_USER_POSTS";
+
+//colorpanel
+export const SET_COLORS = "SET_COLORS";

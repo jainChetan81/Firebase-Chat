@@ -37,7 +37,8 @@ class UserPanel extends Component {
     render() {
         const { currentUser } = this.props;
         return (
-            <Grid style={{ background: "#4c3c4c", fontSize: "1.2rem" }}>
+            <Grid
+                style={{ background: this.props.primary, fontSize: "1.2rem" }}>
                 <Grid.Column>
                     <Grid.Row style={{ padding: "1.2rem", margin: 0 }}>
                         <Header inverted float="left" as="h2">
@@ -68,6 +69,8 @@ class UserPanel extends Component {
 }
 const mapStateToProps = (state) => ({
     currentUser: state.user.currentUser,
+    primary: state.colors.primary,
+    secondary: state.colors.secondary,
 });
 
 export default connect(mapStateToProps)(UserPanel);
