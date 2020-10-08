@@ -25,6 +25,7 @@ class Messages extends Component {
         searchLoading: false,
         searchResults: [],
         typingUsers: [],
+        listeners: [],
     };
 
     componentDidUpdate(prevProps, prevState) {
@@ -34,7 +35,8 @@ class Messages extends Component {
         }
         if (channel !== prevProps.channel) {
             this.setState({ typingUsers: [] });
-            if (channel || currentUser) {
+            if (channel && currentUser) {
+                // this.removeListener(this.state.listeners);
                 this.addMessageListeners(channel.id);
                 this.addTypingListeners(channel.id);
                 this.addUserStarrListeners(channel.id, currentUser.uid);
@@ -42,15 +44,39 @@ class Messages extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.removeListener(this.state.listeners);
+        this.state.connectedRef.off();
+    }
+
+    addToListeners = (id, ref, event) => {
+        const index = this.state.listeners.findIndex(
+            (listener) => listener.id === id && listener.ref === ref
+        );
+
+        if (index !== -1) {
+            const newListener = { id, ref, event };
+            this.setState({
+                listeners: this.state.listeners.concat(newListener),
+            });
+        }
+    };
+
+    removeListener = (listeners) => {
+        listeners.map((listener) =>
+            listener.ref.child(listener.id).off(listener.event)
+        );
+    };
+
     scrollToBottom = () => {
         this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     };
 
-    addTypingListeners = (channelID) => {
+    addTypingListeners = (channelId) => {
         let typingUsers = [];
         const { typingRef, connectedRef } = this.state;
 
-        typingRef.child(channelID).on("child_added", (snap) => {
+        typingRef.child(channelId).on("child_added", (snap) => {
             if (snap.key !== this.props.currentUser.uid) {
                 typingUsers = typingUsers.concat({
                     id: snap.key,
@@ -59,8 +85,9 @@ class Messages extends Component {
                 this.setState({ typingUsers });
             }
         });
+        this.addToListeners(channelId, typingRef, "child_added");
 
-        typingRef.child(channelID).on("child_removed", (snap) => {
+        typingRef.child(channelId).on("child_removed", (snap) => {
             const index = typingUsers.findIndex((user) => user.id === snap.key);
             if (index !== -1) {
                 typingUsers = typingUsers.filter(
@@ -69,11 +96,12 @@ class Messages extends Component {
                 this.setState({ typingUsers });
             }
         });
+        this.addToListeners(channelId, typingRef, "child_removed");
 
         connectedRef.on("value", (snap) => {
             if (snap.val() === true) {
                 typingRef
-                    .child(channelID)
+                    .child(channelId)
                     .child(this.props.currentUser.uid)
                     .onDisconnect()
                     .remove((err) => {
@@ -100,15 +128,15 @@ class Messages extends Component {
             </div>
         ));
 
-    addUserStarrListeners = (channelID, userID) => {
+    addUserStarrListeners = (channelId, userId) => {
         this.state.usersRef
-            .child(userID)
+            .child(userId)
             .child("starred")
             .once("value")
             .then((data) => {
                 if (data.val() !== null) {
                     const channelIds = Object.keys(data.val());
-                    const prevStarred = channelIds.includes(channelID);
+                    const prevStarred = channelIds.includes(channelId);
                     this.setState({ isChannelStarred: prevStarred });
                 }
             });
@@ -178,6 +206,7 @@ class Messages extends Component {
             this.countUniqueUsers(loadedMessages);
             this.countUserPosts(loadedMessages);
         });
+        this.addToListeners(channelId, ref, "child_added");
         if (flag === 0) {
             this.setState({
                 messages: [],

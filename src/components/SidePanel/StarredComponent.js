@@ -19,10 +19,22 @@ class StarredComponent extends Component {
             }
         }
     }
+    componentWillUnmount() {
+        this.removeListeners();
+    }
 
-    addListeners = (userID) => {
+    removeListeners = () => {
         this.state.usersRef
-            .child(userID)
+            .child(`${this.props.currentUser.uid}/starred`)
+            .off();
+        this.state.starredChannels.forEach((channel) => {
+            this.state.messagesRef.child(channel.id).off();
+        });
+    };
+
+    addListeners = (userId) => {
+        this.state.usersRef
+            .child(userId)
             .child("starred")
             .on("child_added", (snap) => {
                 const starredChannel = { id: snap.key, ...snap.val() };
@@ -34,7 +46,7 @@ class StarredComponent extends Component {
                 });
             });
         this.state.usersRef
-            .child(userID)
+            .child(userId)
             .child("starred")
             .on("child_removed", (snap) => {
                 const channeToRemove = { id: snap.key, ...snap.val() };
