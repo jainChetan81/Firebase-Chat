@@ -27,6 +27,7 @@ class Channels extends Component {
         errors: [],
         loading: false,
     };
+    
     componentDidMount() {
         this.addListeners();
     }
@@ -37,6 +38,9 @@ class Channels extends Component {
 
     removeListeners = () => {
         this.state.channelsRef.off();
+        this.state.channels.forEach((channel) => {
+            this.state.messagesRef.child(channel.id).off();
+        });
     };
 
     addListeners = () => {
@@ -50,11 +54,11 @@ class Channels extends Component {
         });
     };
 
-    addNotificationListener = (channelID) => {
-        this.state.messagesRef.child(channelID).on("value", (snap) => {
+    addNotificationListener = (channelId) => {
+        this.state.messagesRef.child(channelId).on("value", (snap) => {
             if (this.props.channel) {
                 this.handleNotifications(
-                    channelID,
+                    channelId,
                     this.props.channel.id,
                     this.state.notifications,
                     snap
@@ -64,13 +68,13 @@ class Channels extends Component {
     };
 
     //prettier-ignore
-    handleNotifications = (channelID, currentChannelID, notifications, snap) => {
+    handleNotifications = (channelId, currentChannelId, notifications, snap) => {
         let lastTotal = 0;
         let index = notifications.findIndex(
-            (notification) => notification.id === channelID
+            (notification) => notification.id === channelId
         );
         if (index !== -1) {
-            if (channelID !== currentChannelID) {
+            if (channelId !== currentChannelId) {
                 lastTotal = notifications[index].total;
                 if (snap.numChildren() - lastTotal > 0) {
                     notifications[index].count = snap.numChildren() - lastTotal;
@@ -79,7 +83,7 @@ class Channels extends Component {
             notifications[index].lastKnownTotal = snap.numChildren();
         } else {
             notifications.push({
-                id: channelID,
+                id: channelId,
                 total: snap.numChildren(),
                 lastKnownTotal: snap.numChildren(),
                 count: 0,

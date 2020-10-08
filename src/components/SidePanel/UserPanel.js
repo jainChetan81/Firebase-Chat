@@ -75,7 +75,7 @@ class UserPanel extends Component {
     uploadCroppedImage = () => {
         const { storageRef, croppedImage, file } = this.state;
         const metadata = { contentType: mime.lookup(croppedImage.name) };
-        const filePath = `avatars/user-${
+        const filePath = `avatars/users/${
             this.props.currentUser.uid
         }/${uuidv4()}.jpg`;
         storageRef
@@ -163,7 +163,7 @@ class UserPanel extends Component {
 
                     {/* change user avatar modal */}
                     <Modal basic open={modal} onClose={this.closeModal}>
-                        <Modal.Header>CHange Avatar</Modal.Header>
+                        <Modal.Header>Change Avatar</Modal.Header>
                         <Modal.Content>
                             <Input
                                 fluid

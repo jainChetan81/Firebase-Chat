@@ -12,7 +12,7 @@ class DirectMessages extends Component {
         connectedRef: firebase.database().ref(".info/connected"),
         presenceRef: firebase.database().ref("presence"),
     };
-    
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
@@ -20,6 +20,15 @@ class DirectMessages extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.removeListeners();
+    }
+
+    removeListeners = () => {
+        this.state.usersRef.off();
+        this.state.presenceRef.off();
+        this.state.connectedRef.off();
+    };
     addListeners = (currentUserUid) => {
         let loadedUsers = [];
         this.state.usersRef.on("child_added", (snap) => {
@@ -27,15 +36,6 @@ class DirectMessages extends Component {
                 let user = snap.val();
                 user["uid"] = snap.key;
                 user["status"] = "offline";
-                loadedUsers.push(user);
-                this.setState({ users: loadedUsers });
-            }
-            if (currentUserUid === snap.key) {
-                //TODO:remove in future
-                let user = snap.val();
-                user.name = user.name + " (You)";
-                user["uid"] = snap.key;
-                user["status"] = "online";
                 loadedUsers.push(user);
                 this.setState({ users: loadedUsers });
             }
@@ -88,15 +88,15 @@ class DirectMessages extends Component {
         this.props.setPrivateChannel(true);
         this.setActiveChannel(user.uid);
     };
-    setActiveChannel = (userID) => {
-        this.setState({ activeChannel: userID });
+    setActiveChannel = (userId) => {
+        this.setState({ activeChannel: userId });
     };
 
     getChannelId = (uid) => {
-        const currenUserID = this.props.currentUser.uid;
-        return uid < currenUserID
-            ? `${uid}/${currenUserID}`
-            : `${currenUserID}/${uid}`;
+        const currenUserId = this.props.currentUser.uid;
+        return uid < currenUserId
+            ? `${uid}/${currenUserId}`
+            : `${currenUserId}/${uid}`;
     };
 
     render() {
