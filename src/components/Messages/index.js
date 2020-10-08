@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import Message from "./Message";
 import { setUserPosts } from "../../actions";
 import Typing from "./Typing";
+import Skeleton from "./Skeleton";
 
 class Messages extends Component {
     state = {
@@ -26,8 +27,11 @@ class Messages extends Component {
         typingUsers: [],
     };
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps, prevState) {
         const { channel, currentUser } = this.props;
+        if (this.messagesEnd) {
+            this.scrollToBottom();
+        }
         if (channel !== prevProps.channel) {
             this.setState({ typingUsers: [] });
             if (channel || currentUser) {
@@ -38,10 +42,13 @@ class Messages extends Component {
         }
     }
 
+    scrollToBottom = () => {
+        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    };
+
     addTypingListeners = (channelID) => {
         let typingUsers = [];
         const { typingRef, connectedRef } = this.state;
-        console.log("channelID", channelID);
 
         typingRef.child(channelID).on("child_added", (snap) => {
             if (snap.key !== this.props.currentUser.uid) {
@@ -254,9 +261,18 @@ class Messages extends Component {
         if (percent > 0) this.setState({ progressBar: true });
     };
 
+    displayMessageSkeleton = (loading) =>
+        loading ? (
+            <Fragment>
+                {[...Array(10)].map((_, i) => (
+                    <Skeleton key={i} />
+                ))}
+            </Fragment>
+        ) : null;
+
     render() {
         //prettier-ignore
-        const{messages,progressBar,numUniqueUsers,searchResults,searchLoading,isChannelStarred,typingUsers}=this.state;
+        const {messages, progressBar, numUniqueUsers, searchResults, searchLoading, isChannelStarred, typingUsers, messagesLoading} = this.state;
         return (
             <Fragment>
                 <MessagesHeader
@@ -273,10 +289,12 @@ class Messages extends Component {
                         className={
                             progressBar ? "messages__progress" : "messages"
                         }>
+                        {this.displayMessageSkeleton(messagesLoading)}
                         {searchResults.length > 0
                             ? this.displayMessages(searchResults)
                             : this.displayMessages(messages)}
                         {this.displayTypingUsers(typingUsers)}
+                        <div ref={(node) => (this.messagesEnd = node)} />{" "}
                     </Comment.Group>
                 </Segment>
                 <MessageForm
