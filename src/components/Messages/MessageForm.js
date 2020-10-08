@@ -34,7 +34,7 @@ class MessageForm extends Component {
     uploadFile = (file, metadata) => {
         const pathToUpload = this.props.channel.id;
         const ref = this.props.getMessagesRef();
-        const filePath = `#{this.getPath()}/${uuidv4()}.jpg`;
+        const filePath = `${this.getPath()}/${uuidv4()}.jpg`;
 
         this.setState(
             {
