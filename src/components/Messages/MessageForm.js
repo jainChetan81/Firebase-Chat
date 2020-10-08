@@ -14,15 +14,28 @@ class MessageForm extends Component {
         uploadState: "",
         uploadTask: null,
         storageRef: firebase.storage().ref(),
+        typingRef: firebase.database().ref("typing"),
         percentUploaded: 0,
     };
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const { channel, user } = this.props;
+        if (channel !== prevProps.channel) {
+            if (channel) {
+                this.state.typingRef.child(channel.id).child(user.uid).remove();
+                this.setState({ message: "" });
+            }
+        }
+    }
 
     openModal = () => {
         this.setState({ modal: true });
     };
+
     closeModal = () => {
         this.setState({ modal: false });
     };
+
     getPath = () => {
         if (this.props.isPrivateChannel) {
             return `chat/private-${this.props.channel.id}`;
@@ -121,8 +134,18 @@ class MessageForm extends Component {
         this.setState({ [event.target.name]: event.target.value });
     };
 
+    handleKeyDown = () => {
+        const { message, typingRef } = this.state;
+        const { channel, user } = this.props;
+        if (message) {
+            typingRef.child(channel.id).child(user.uid).set(user.displayName);
+        } else {
+            typingRef.child(channel.id).child(user.uid).remove();
+        }
+    };
+
     sendMessage = () => {
-        const { getMessagesRef, channel } = this.props;
+        const { getMessagesRef, channel, user, typingRef } = this.props;
         const { message, errors } = this.state;
         if (message) {
             this.setState({ loading: true });
@@ -132,6 +155,10 @@ class MessageForm extends Component {
                 .set(this.createMessage())
                 .then(() => {
                     this.setState({ loading: false, message: "", errors: [] });
+                    typingRef
+                        .child(channel.id)
+                        .child(user.uid)
+                        .set(user.displayName);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -164,6 +191,7 @@ class MessageForm extends Component {
                     name="message"
                     value={message}
                     onChange={this.handleChange}
+                    onKeyDown={this.handleKeyDown}
                     style={{ marginBottom: "0.7em" }}
                     label={<Button icon="add" />}
                     className={
