@@ -72,16 +72,6 @@ class UserPanel extends Component {
 
     onCrop = (previewImage) => this.setState({ croppedImage: previewImage });
 
-    // handleCropImage = () => {
-    //     if (this.avatarEditor) {
-    //         this.avatarEditor.getImageScaledToCanvas().toBlob((blob) => {
-    //             let imageUrl = URL.createObjectURL(blob);
-    //             console.log("blob", blob);
-    //             this.setState({ croppedImage: imageUrl, blob });
-    //         });
-    //     }
-    // };
-
     uploadCroppedImage = () => {
         const { storageRef, croppedImage, file } = this.state;
         const metadata = { contentType: mime.lookup(croppedImage.name) };
@@ -101,7 +91,6 @@ class UserPanel extends Component {
     };
 
     changeAvatar = (imageUrl) => {
-        console.log("uploadedCroppedImage", imageUrl);
         this.props.currentUser
             .updateProfile({
                 photoURL: imageUrl,
@@ -128,7 +117,6 @@ class UserPanel extends Component {
         if (file) {
             reader.readAsDataURL(file);
             reader.addEventListener("load", () => {
-                console.log("file", file);
                 this.setState({ previewImage: reader.result, file });
             });
         }
