@@ -5,6 +5,8 @@ import uuidv4 from "uuid/dist/v4";
 import { connect } from "react-redux";
 import FileModal from "./FileModal";
 import ProgressBar from "./ProgressBar";
+import "emoji-mart/css/emoji-mart.css";
+import { emojiIndex, Picker } from "emoji-mart";
 class MessageForm extends Component {
     state = {
         message: "",
@@ -16,6 +18,7 @@ class MessageForm extends Component {
         storageRef: firebase.storage().ref(),
         typingRef: firebase.database().ref("typing"),
         percentUploaded: 0,
+        emojiPicker: false,
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -134,7 +137,11 @@ class MessageForm extends Component {
         this.setState({ [event.target.name]: event.target.value });
     };
 
-    handleKeyDown = () => {
+    handleKeyDown = (event) => {
+        if (event.ctrlKey && event.keyCode === 13) {
+            this.sendMessage();
+        }
+
         const { message, typingRef } = this.state;
         const { channel, user } = this.props;
         if (message) {
@@ -144,9 +151,32 @@ class MessageForm extends Component {
         }
     };
 
+    handleTogglePicker = () => {
+        this.setState((prevState) => ({ emojiPicker: !prevState.emojiPicker }));
+    };
+
+    handleAddEmoji = (emoji) => {
+        const oldMessage = this.state.message;
+        const newMessage = this.colonToUnicode(`${oldMessage} ${emoji.colons}`);
+        this.setState({ message: newMessage, emojiPicker: false });
+        setTimeout(() => this.messageInputRef.focus(), 0);
+    };
+
+    colonToUnicode = (message) =>
+        message.replace(/:[A-Za-z0-9_+-]+:/g, (x) => {
+            x = x.replace(/:/g, "");
+            let emoji = emojiIndex.emojis[x];
+            if (typeof emoji !== "undefined") {
+                let unicode = emoji.native;
+                if (typeof unicode !== "undefined") return unicode;
+            }
+            x = ":" + x + ":";
+            return x;
+        });
+
     sendMessage = () => {
-        const { getMessagesRef, channel, user, typingRef } = this.props;
-        const { message, errors } = this.state;
+        const { getMessagesRef, channel, user } = this.props;
+        const { message, errors, typingRef } = this.state;
         if (message) {
             this.setState({ loading: true });
             getMessagesRef()
@@ -183,17 +213,34 @@ class MessageForm extends Component {
             modal,
             percentUploaded,
             uploadState,
+            emojiPicker,
         } = this.state;
         return (
             <Segment className="message__form">
+                {emojiPicker && (
+                    <Picker
+                        set="apple"
+                        onSelect={this.handleAddEmoji}
+                        className="emojipicker"
+                        title="Pick You Emoji"
+                        emoji="point_up"
+                    />
+                )}
                 <Input
                     fluid
+                    ref={(node) => (this.messageInputRef = node)}
                     name="message"
                     value={message}
                     onChange={this.handleChange}
                     onKeyDown={this.handleKeyDown}
                     style={{ marginBottom: "0.7em" }}
-                    label={<Button icon="add" />}
+                    label={
+                        <Button
+                            icon={emojiPicker ? "close" : "add"}
+                            content={emojiPicker ? null : "add"}
+                            onClick={this.handleTogglePicker}
+                        />
+                    }
                     className={
                         errors.some((error) =>
                             error.message.includes("message")
