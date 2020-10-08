@@ -83,21 +83,19 @@ class UserPanel extends Component {
     // };
 
     uploadCroppedImage = () => {
-        //prettier-ignore
-        const { storageRef, croppedImage ,uploadedCroppedImage,file} = this.state;
+        const { storageRef, croppedImage, file } = this.state;
         const metadata = { contentType: mime.lookup(croppedImage.name) };
         const filePath = `avatars/user-${
             this.props.currentUser.uid
         }/${uuidv4()}.jpg`;
-        // file.toBlob((blob) => console.log("blob", blob));
         storageRef
             .child(filePath)
             .put(file, metadata)
             .then((snap) => {
                 snap.ref.getDownloadURL().then((downloadUrl) => {
-                    this.setState({ uploadedCroppedImage: downloadUrl }, () => {old
-                        this.changeAvatar(downloadUrl);
-                    });
+                    this.setState({ uploadedCroppedImage: downloadUrl }, () =>
+                        this.changeAvatar(downloadUrl)
+                    );
                 });
             });
     };
