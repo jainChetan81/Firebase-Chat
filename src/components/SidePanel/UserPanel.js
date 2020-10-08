@@ -95,7 +95,7 @@ class UserPanel extends Component {
             .put(file, metadata)
             .then((snap) => {
                 snap.ref.getDownloadURL().then((downloadUrl) => {
-                    this.setState({ uploadedCroppedImage: downloadUrl }, () => {old
+                    this.setState({ uploadedCroppedImage: downloadUrl }, () => {
                         this.changeAvatar(downloadUrl);
                     });
                 });
