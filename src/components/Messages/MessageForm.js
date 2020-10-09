@@ -25,7 +25,10 @@ class MessageForm extends Component {
         const { channel, user } = this.props;
         if (channel !== prevProps.channel) {
             if (channel) {
-                this.state.typingRef.child(channel.id).child(user.uid).remove();
+                this.state.typingRef
+                    .child(channel?.id)
+                    .child(user?.uid)
+                    .remove();
                 this.setState({ message: "" });
             }
         }
@@ -128,9 +131,9 @@ class MessageForm extends Component {
         const message = {
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             user: {
-                id: this.props.user.uid,
-                name: this.props.user.displayName,
-                avatar: this.props.user.photoURL,
+                id: this.props.user?.uid,
+                name: this.props.user?.displayName,
+                avatar: this.props.user?.photoURL,
             },
         };
         if (fileUrl !== null) {
@@ -153,9 +156,9 @@ class MessageForm extends Component {
         const { message, typingRef } = this.state;
         const { channel, user } = this.props;
         if (message) {
-            typingRef.child(channel.id).child(user.uid).set(user.displayName);
+            typingRef.child(channel?.id).child(user?.uid).set(user.displayName);
         } else {
-            typingRef.child(channel.id).child(user.uid).remove();
+            typingRef.child(channel?.id).child(user?.uid).remove();
         }
     };
 
@@ -194,9 +197,9 @@ class MessageForm extends Component {
                 .then(() => {
                     this.setState({ loading: false, message: "", errors: [] });
                     typingRef
-                        .child(channel.id)
-                        .child(user.uid)
-                        .set(user.displayName);
+                        .child(channel?.id)
+                        .child(user?.uid)
+                        .set(user?.displayName);
                 })
                 .catch((err) => {
                     console.error(err);

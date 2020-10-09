@@ -16,7 +16,7 @@ class DirectMessages extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
-            if (currentUser) this.addListeners(currentUser.uid);
+            if (currentUser) this.addListeners(currentUser?.uid);
         }
     }
 
@@ -68,7 +68,7 @@ class DirectMessages extends Component {
 
     addStatusToUser = (userId, connected = true) => {
         const updatedUsers = this.state.users.reduce((acc, user) => {
-            if (user.uid === userId) {
+            if (user?.uid === userId) {
                 user["status"] = `${connected ? "online" : "offline"}`;
             }
             return acc.concat(user);
@@ -79,21 +79,21 @@ class DirectMessages extends Component {
     isUserOnline = (user) => user.status === "online";
 
     changeChannel = (user) => {
-        const channelId = this.getChannelId(user.uid);
+        const channelId = this.getChannelId(user?.uid);
         const channelData = {
             id: channelId,
             name: user.name,
         };
         this.props.setCurrentChannel(channelData);
         this.props.setPrivateChannel(true);
-        this.setActiveChannel(user.uid);
+        this.setActiveChannel(user?.uid);
     };
     setActiveChannel = (userId) => {
         this.setState({ activeChannel: userId });
     };
 
     getChannelId = (uid) => {
-        const currenUserId = this.props.currentUser.uid;
+        const currenUserId = this.props.currentUser?.uid;
         return uid < currenUserId
             ? `${uid}/${currenUserId}`
             : `${currenUserId}/${uid}`;
@@ -111,8 +111,8 @@ class DirectMessages extends Component {
                 </Menu.Item>
                 {users.map((user) => (
                     <Menu.Item
-                        active={user.uid === activeChannel}
-                        key={user.uid}
+                        active={user?.uid === activeChannel}
+                        key={user?.uid}
                         onClick={() => this.changeChannel(user)}
                         style={{
                             opacity: "0.7",

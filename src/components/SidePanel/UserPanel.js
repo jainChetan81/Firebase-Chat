@@ -79,10 +79,10 @@ class UserPanel extends Component {
         if (this.isAuthorized(file.name)) {
             const customMetadata = { contentType: mime.lookup(croppedImage) };
             console.log("customMetadata", customMetadata, file.name);
-            const filePath = `avatars/users/${this.props.currentUser.uid}`;
+            const filePath = `avatars/users/${this.props.currentUser?.uid}`;
             storageRef
                 .child(filePath)
-                .put(file, )
+                .put(file, customMetadata)
                 .then((snap) => {
                     snap.ref.getDownloadURL().then((downloadUrl) => {
                         this.setState(
@@ -106,7 +106,7 @@ class UserPanel extends Component {
             .catch((err) => console.error("err :", err));
 
         this.state.usersRef
-            .child(this.props.currentUser.uid)
+            .child(this.props.currentUser?.uid)
             .update({ avatar: imageUrl })
             .then(() => {
                 console.log("user avatar updated");

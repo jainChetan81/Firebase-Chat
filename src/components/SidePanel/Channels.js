@@ -113,7 +113,7 @@ class Channels extends Component {
         if (this.props.channel)
             this.state.typingRef
                 .child(this.props.channel.id)
-                .child(this.props.currentUser.uid)
+                .child(this.props.currentUser?.uid)
                 .remove();
         this.props.setPrivateChannel(false);
         this.setState({ activeChannel: channel.id, channel, channelName: "" }); //set active channel
