@@ -20,11 +20,13 @@ class UserPanel extends Component {
         modal: false,
         previewImage: "",
         croppedImage: "",
+        authorized: ["image/jpeg", "image/png"],
         storageRef: firebase.storage().ref(),
-        userRef: firebase.auth().currentUser,
         usersRef: firebase.database().ref("users"),
-        metadata: ["image/jpeg", "image/png"],
         uploadedCroppedImage: "",
+        metadata: {
+            contentType: ["image/jpeg", "image/png"],
+        },
         file: null,
     };
 
@@ -60,7 +62,7 @@ class UserPanel extends Component {
         });
 
     isAuthorized = (fileName) =>
-        this.state.metadata.includes(mime.lookup(fileName));
+        this.state.authorized.includes(mime.lookup(fileName));
 
     onBeforeFileLoad = () => {
         const { file } = this.state;
@@ -73,21 +75,23 @@ class UserPanel extends Component {
     onCrop = (previewImage) => this.setState({ croppedImage: previewImage });
 
     uploadCroppedImage = () => {
-        const { storageRef, croppedImage, file } = this.state;
-        const metadata = { contentType: mime.lookup(croppedImage.name) };
-        const filePath = `avatars/users/${
-            this.props.currentUser.uid
-        }/${uuidv4()}.jpg`;
-        storageRef
-            .child(filePath)
-            .put(file, metadata)
-            .then((snap) => {
-                snap.ref.getDownloadURL().then((downloadUrl) => {
-                    this.setState({ uploadedCroppedImage: downloadUrl }, () =>
-                        this.changeAvatar(downloadUrl)
-                    );
+        const { storageRef, croppedImage, file, metadata } = this.state;
+        if (this.isAuthorized(file.name)) {
+            const customMetadata = { contentType: mime.lookup(croppedImage) };
+            console.log("customMetadata", customMetadata, file.name);
+            const filePath = `avatars/users/${this.props.currentUser.uid}`;
+            storageRef
+                .child(filePath)
+                .put(file, )
+                .then((snap) => {
+                    snap.ref.getDownloadURL().then((downloadUrl) => {
+                        this.setState(
+                            { uploadedCroppedImage: downloadUrl },
+                            () => this.changeAvatar(downloadUrl)
+                        );
+                    });
                 });
-            });
+        }
     };
 
     changeAvatar = (imageUrl) => {
@@ -113,7 +117,6 @@ class UserPanel extends Component {
     handleChange = (e) => {
         const file = e.target.files[0];
         const reader = new FileReader();
-        // this.setState({ previewImage: "", croppedImage: "" });
         if (file) {
             reader.readAsDataURL(file);
             reader.addEventListener("load", () => {
