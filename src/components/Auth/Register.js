@@ -69,7 +69,7 @@ class Register extends Component {
         });
     };
     saveUser = (createdUser) => {
-        return this.state.usersRef.child(createdUser.user.uid).set({
+        return this.state.usersRef.child(createdUser.user?.uid).set({
             name: createdUser.user.displayName,
             avatar: createdUser.user.photoURL,
         });

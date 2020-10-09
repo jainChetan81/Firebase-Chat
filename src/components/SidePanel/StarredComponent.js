@@ -15,17 +15,18 @@ class StarredComponent extends Component {
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
             if (currentUser) {
-                this.addListeners(currentUser.uid);
+                this.addListeners(currentUser?.uid);
             }
         }
     }
     componentWillUnmount() {
-        this.removeListeners();
+        if (this.props.currentUser && this.state.starredChannels.length > 0)
+            this.removeListeners();
     }
 
     removeListeners = () => {
         this.state.usersRef
-            .child(`${this.props.currentUser.uid}/starred`)
+            .child(`${this.props.currentUser?.uid}/starred`)
             .off();
         this.state.starredChannels.forEach((channel) => {
             this.state.messagesRef.child(channel.id).off();

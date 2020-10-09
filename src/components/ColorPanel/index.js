@@ -26,7 +26,7 @@ class ColorPanel extends Component {
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
             if (currentUser) {
-                this.addListeners(currentUser.uid);
+                this.addListeners(currentUser?.uid);
             }
         }
     }
@@ -35,7 +35,9 @@ class ColorPanel extends Component {
     }
 
     removeListener = () => {
-        this.state.usersRef.child(`${this.props.currentUser?.uid}/colors`).off()
+        this.state.usersRef
+            .child(`${this.props.currentUser?.uid}/colors`)
+            .off();
     };
 
     addListeners = (userId) => {
@@ -80,7 +82,7 @@ class ColorPanel extends Component {
         const { primary, secondary, usersRef } = this.state;
         if (primary && secondary) {
             usersRef
-                .child(`${this.props.currentUser.uid}/colors`)
+                .child(`${this.props.currentUser?.uid}/colors`)
                 .push()
                 .update({
                     primary,

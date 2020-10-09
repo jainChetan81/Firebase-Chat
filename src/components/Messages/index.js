@@ -37,9 +37,9 @@ class Messages extends Component {
             this.setState({ typingUsers: [] });
             if (channel && currentUser) {
                 // this.removeListener(this.state.listeners);
-                this.addMessageListeners(channel.id);
-                this.addTypingListeners(channel.id);
-                this.addUserStarrListeners(channel.id, currentUser.uid);
+                this.addMessageListeners(channel?.id);
+                this.addTypingListeners(channel?.id);
+                this.addUserStarrListeners(channel?.id, currentUser?.uid);
             }
         }
     }
@@ -77,7 +77,7 @@ class Messages extends Component {
         const { typingRef, connectedRef } = this.state;
 
         typingRef.child(channelId).on("child_added", (snap) => {
-            if (snap.key !== this.props.currentUser.uid) {
+            if (snap.key !== this.props.currentUser?.uid) {
                 typingUsers = typingUsers.concat({
                     id: snap.key,
                     name: snap.val(),
@@ -102,7 +102,7 @@ class Messages extends Component {
             if (snap.val() === true) {
                 typingRef
                     .child(channelId)
-                    .child(this.props.currentUser.uid)
+                    .child(this.props.currentUser?.uid)
                     .onDisconnect()
                     .remove((err) => {
                         if (err !== null) {
@@ -156,7 +156,7 @@ class Messages extends Component {
     starrChannel = () => {
         if (this.state.isChannelStarred) {
             this.state.usersRef
-                .child(`${this.props.currentUser.uid}/starred`)
+                .child(`${this.props.currentUser?.uid}/starred`)
                 .update({
                     [this.props.channel.id]: {
                         name: this.props.channel.name,
@@ -169,7 +169,7 @@ class Messages extends Component {
                 });
         } else {
             this.state.usersRef
-                .child(`${this.props.currentUser.uid}/starred`)
+                .child(`${this.props.currentUser?.uid}/starred`)
                 .child(this.props.channel.id)
                 .remove((err) => {
                     if (err !== null) {
