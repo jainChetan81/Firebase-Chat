@@ -27,7 +27,7 @@ class Channels extends Component {
         errors: [],
         loading: false,
     };
-    
+
     componentDidMount() {
         this.addListeners();
     }
