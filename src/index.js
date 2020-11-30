@@ -58,4 +58,5 @@ ReactDOM.render(
     document.getElementById("root")
 );
 
-//TODO:avatar storage problems
+//TODO:avatar storage problems in rules
+//TODO:default avatar setting
