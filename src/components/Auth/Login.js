@@ -54,7 +54,7 @@ class Login extends Component {
     };
     displayErrors = (errors) => {
         return errors.map((err, index) => {
-            console.log("err.message : ", JSON.stringify(err.message));
+            console.log("err IN LOGIN : ", JSON.stringify(err.message));
             return <p key={index}>{err.message}</p>;
         });
     };

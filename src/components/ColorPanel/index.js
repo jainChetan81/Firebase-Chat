@@ -18,10 +18,16 @@ class ColorPanel extends Component {
         modal: false,
         primary: "",
         secondary: "",
+        user: this.props.currentUser,
         usersRef: firebase.database().ref("users"),
         userColors: [],
     };
 
+    componentDidMount() {
+        if (this.state.user) {
+            this.addListener(this.state.user.uid);
+        }
+    }
     componentDidUpdate(prevProps, prevState, snapshot) {
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
@@ -34,13 +40,17 @@ class ColorPanel extends Component {
         this.removeListener();
     }
 
+    // removeListener = () => {
+    //     this.state.usersRef
+    //         .child(`${this.props.currentUser?.uid}/colors`)
+    //         .off();
+    // };
     removeListener = () => {
-        this.state.usersRef
-            .child(`${this.props.currentUser?.uid}/colors`)
-            .off();
+        if (this.state.user)
+            this.state.usersRef.child(`${this.state.user.uid}/colors`).off();
     };
 
-    addListeners = (userId) => {
+    addListener = (userId) => {
         let userColors = [];
         this.state.usersRef
             .child(`${userId}/colors`)
@@ -78,11 +88,13 @@ class ColorPanel extends Component {
                 </div>
             </Fragment>
         ));
+
     handleSaveColors = () => {
         const { primary, secondary, usersRef } = this.state;
         if (primary && secondary) {
             usersRef
-                .child(`${this.props.currentUser?.uid}/colors`)
+                // .child(`${this.props.currentUser?.uid}/colors`)
+                .child(`${this.state.user.uid}/colors`)
                 .push()
                 .update({
                     primary,
@@ -152,7 +164,7 @@ class ColorPanel extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
+    // currentUser: state.user.currentUser,
 });
 
 export default connect(mapStateToProps, { setColors })(ColorPanel);

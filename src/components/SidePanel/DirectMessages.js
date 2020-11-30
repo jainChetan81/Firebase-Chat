@@ -14,13 +14,16 @@ class DirectMessages extends Component {
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log("cdm in direct messages");
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
+            // console.log("current user is found");
             if (currentUser) this.addListeners(currentUser?.uid);
         }
     }
 
     componentWillUnmount() {
+        console.log("cwm in direct messages");
         this.removeListeners();
     }
 

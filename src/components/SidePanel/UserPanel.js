@@ -10,13 +10,12 @@ import {
     Input,
     Modal,
 } from "semantic-ui-react";
-import uuidv4 from "uuid/dist/v4";
 import mime from "mime-types";
-import { connect } from "react-redux";
 import Avatar from "react-avatar-edit";
 
 class UserPanel extends Component {
     state = {
+        user: this.props.currentUser,
         modal: false,
         previewImage: "",
         croppedImage: "",
@@ -36,7 +35,7 @@ class UserPanel extends Component {
             text: (
                 <span>
                     Signed in as
-                    <strong> {this.props.currentUser?.displayName}</strong>
+                    <strong> {this.state.user?.displayName}</strong>
                 </span>
             ),
             disabled: true,
@@ -75,11 +74,11 @@ class UserPanel extends Component {
     onCrop = (previewImage) => this.setState({ croppedImage: previewImage });
 
     uploadCroppedImage = () => {
-        const { storageRef, croppedImage, file, metadata } = this.state;
+        const { storageRef, croppedImage, file } = this.state;
         if (this.isAuthorized(file.name)) {
             const customMetadata = { contentType: mime.lookup(croppedImage) };
             console.log("customMetadata", customMetadata, file.name);
-            const filePath = `avatars/users/${this.props.currentUser?.uid}`;
+            const filePath = `avatars/users/${this.state.user?.uid}`;
             storageRef
                 .child(filePath)
                 .put(file, customMetadata)
@@ -95,7 +94,7 @@ class UserPanel extends Component {
     };
 
     changeAvatar = (imageUrl) => {
-        this.props.currentUser
+        this.state.user
             .updateProfile({
                 photoURL: imageUrl,
             })
@@ -106,7 +105,7 @@ class UserPanel extends Component {
             .catch((err) => console.error("err :", err));
 
         this.state.usersRef
-            .child(this.props.currentUser?.uid)
+            .child(this.state.user?.uid)
             .update({ avatar: imageUrl })
             .then(() => {
                 console.log("user avatar updated");
@@ -136,8 +135,8 @@ class UserPanel extends Component {
     };
 
     render() {
-        const { currentUser, primary } = this.props;
-        const { modal, previewImage, croppedImage } = this.state;
+        const { primary } = this.props;
+        const { modal, previewImage, croppedImage, user } = this.state;
         return (
             <Grid style={{ background: primary, fontSize: "1.2rem" }}>
                 <Grid.Column>
@@ -152,11 +151,11 @@ class UserPanel extends Component {
                                 trigger={
                                     <span>
                                         <Image
-                                            src={currentUser?.photoURL}
+                                            src={user?.photoURL}
                                             spaced="right"
                                             avatar
                                         />
-                                        {currentUser?.displayName}
+                                        {user?.displayName}
                                     </span>
                                 }
                                 options={this.dropDownOptions()}
@@ -228,9 +227,5 @@ class UserPanel extends Component {
         );
     }
 }
-const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
-    primary: state.colors.primary,
-});
 
-export default connect(mapStateToProps)(UserPanel);
+export default UserPanel;

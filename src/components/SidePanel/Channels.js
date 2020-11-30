@@ -31,8 +31,15 @@ class Channels extends Component {
     componentDidMount() {
         this.addListeners();
     }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log("cdm in channels");
+        const { currentUser } = this.props;
+        if (currentUser !== prevProps.currentUser)
+            console.log("current user is found in channels", currentUser);
+    }
 
     componentWillUnmount() {
+        console.log("cwm in channels");
         this.removeListeners();
     }
 
@@ -305,12 +312,7 @@ class Channels extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
-    channel: state.channel.currentChannel,
-});
-
-export default connect(mapStateToProps, {
+export default connect(null, {
     setCurrentChannel,
     setPrivateChannel,
 })(Channels);

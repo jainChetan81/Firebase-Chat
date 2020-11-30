@@ -38,7 +38,6 @@ class MessageForm extends Component {
         if (this.state.uploadTask !== null) {
             this.state.uploadTask.cancel();
             this.setState({ uploadTask: null });
-            this.removeListener();
         }
     }
 

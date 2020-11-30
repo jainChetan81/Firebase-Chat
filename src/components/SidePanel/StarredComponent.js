@@ -6,6 +6,7 @@ import { setCurrentChannel, setPrivateChannel } from "../../actions";
 
 class StarredComponent extends Component {
     state = {
+        user: this.props.currentUser,
         starredChannels: [],
         messagesRef: firebase.database().ref("messages"),
         usersRef: firebase.database().ref("users"),
@@ -15,19 +16,25 @@ class StarredComponent extends Component {
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
             if (currentUser) {
+                this.setState({ user: currentUser });
                 this.addListeners(currentUser?.uid);
             }
         }
     }
+
+    componentDidMount() {
+        if (this.state.user) {
+            this.addListeners(this.state.user?.uid);
+        }
+    }
+
     componentWillUnmount() {
-        if (this.props.currentUser && this.state.starredChannels.length > 0)
+        if (this.state.user && this.state.user.length > 0)
             this.removeListeners();
     }
 
     removeListeners = () => {
-        this.state.usersRef
-            .child(`${this.props.currentUser?.uid}/starred`)
-            .off();
+        this.state.usersRef.child(`${this.state.user?.uid}/starred`).off();
         this.state.starredChannels.forEach((channel) => {
             this.state.messagesRef.child(channel.id).off();
         });
@@ -89,7 +96,7 @@ class StarredComponent extends Component {
                 <Menu.Item>
                     <span>
                         <Icon name="star" />
-                        {"  "}Starred
+                        {"  "}Starrd
                     </span>
                     ({starredChannels.length})
                 </Menu.Item>
@@ -99,11 +106,7 @@ class StarredComponent extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
-});
-
-export default connect(mapStateToProps, {
+export default connect(null, {
     setCurrentChannel,
     setPrivateChannel,
 })(StarredComponent);

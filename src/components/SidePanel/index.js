@@ -5,7 +5,7 @@ import Channels from "./Channels";
 import DirectMessages from "./DirectMessages";
 import StarredComponent from "./StarredComponent";
 
-function SidePanel(props) {
+function SidePanel({ currentUser, primary }) {
     return (
         <Menu
             size="large"
@@ -13,13 +13,13 @@ function SidePanel(props) {
             fixed="left"
             vertical
             style={{
-                background: props.primary ? props.primary : "",
+                background: primary ? primary : "",
                 fontSize: "1.2rem",
             }}>
-            <UserPanel />
-            <StarredComponent />
-            <Channels />
-            <DirectMessages />
+            <UserPanel primary={primary} currentUser={currentUser} />
+            <StarredComponent currentUser={currentUser} />
+            <Channels currentUser={currentUser} />
+            <DirectMessages currentUser={currentUser} />
         </Menu>
     );
 }
