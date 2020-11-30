@@ -37,6 +37,7 @@ class Messages extends Component {
             this.setState({ typingUsers: [] });
             if (channel && currentUser) {
                 // this.removeListener(this.state.listeners);
+                this.setState({ searchTerm: "", searchResults: [] });
                 this.addMessageListeners(channel?.id);
                 this.addTypingListeners(channel?.id);
                 this.addUserStarrListeners(channel?.id, currentUser?.uid);
@@ -301,11 +302,12 @@ class Messages extends Component {
 
     render() {
         //prettier-ignore
-        const {messages, progressBar, numUniqueUsers, searchResults, searchLoading, isChannelStarred, typingUsers, messagesLoading} = this.state;
+        const {messages, progressBar, numUniqueUsers, searchResults, searchLoading, isChannelStarred, typingUsers, messagesLoading, searchTerm} = this.state;
         return (
             <Fragment>
                 <MessagesHeader
                     handleSearchChange={this.handleSearchChange}
+                    searchTerm={searchTerm}
                     displayChannelName={this.displayChannelName}
                     numUniqueUsers={numUniqueUsers}
                     searchLoading={searchLoading}

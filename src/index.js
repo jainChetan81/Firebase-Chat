@@ -60,6 +60,4 @@ ReactDOM.render(
 
 //TODO:avatar storage problems
 
-//TODO: props not loading(starredcomp, ) not working when logging only
-
-//TODO:search results doesn't reset when changing channels or dm's
+//TODO:search results don't reset when changing channels or dm's

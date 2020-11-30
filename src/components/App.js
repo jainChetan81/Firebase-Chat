@@ -9,9 +9,9 @@ import { connect } from "react-redux";
 
 const App = ({
     currentUser,
-    currentChannel,
-    isPrivateChannel,
-    userPosts,
+    // currentChannel,
+    // isPrivateChannel,
+    // userPosts,
     primary,
     secondary,
 }) => (
