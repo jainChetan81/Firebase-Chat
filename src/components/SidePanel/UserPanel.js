@@ -11,11 +11,12 @@ import {
     Modal,
 } from "semantic-ui-react";
 import mime from "mime-types";
+import { connect } from "react-redux";
 import Avatar from "react-avatar-edit";
+import noUserImg from "../../img/no-user-image.jpg";
 
 class UserPanel extends Component {
     state = {
-        user: this.props.currentUser,
         modal: false,
         previewImage: "",
         croppedImage: "",
@@ -24,7 +25,7 @@ class UserPanel extends Component {
         usersRef: firebase.database().ref("users"),
         uploadedCroppedImage: "",
         metadata: {
-            contentType: ["image/jpeg", "image/png"],
+            contentType: "image/jpeg",
         },
         file: null,
     };
@@ -35,7 +36,7 @@ class UserPanel extends Component {
             text: (
                 <span>
                     Signed in as
-                    <strong> {this.state.user?.displayName}</strong>
+                    <strong> {this.props.currentUser?.displayName}</strong>
                 </span>
             ),
             disabled: true,
@@ -74,14 +75,13 @@ class UserPanel extends Component {
     onCrop = (previewImage) => this.setState({ croppedImage: previewImage });
 
     uploadCroppedImage = () => {
-        const { storageRef, croppedImage, file } = this.state;
+        const { storageRef, croppedImage, file, metadata } = this.state;
         if (this.isAuthorized(file.name)) {
             const customMetadata = { contentType: mime.lookup(croppedImage) };
-            console.log("customMetadata", customMetadata, file.name);
-            const filePath = `avatars/users/${this.state.user?.uid}`;
+            console.log("customMetadata", customMetadata, metadata, file.name);
             storageRef
-                .child(filePath)
-                .put(file, customMetadata)
+                .child(`avatars/users/${this.props.currentUser?.uid}`)
+                .put(file, metadata)
                 .then((snap) => {
                     snap.ref.getDownloadURL().then((downloadUrl) => {
                         this.setState(
@@ -94,7 +94,7 @@ class UserPanel extends Component {
     };
 
     changeAvatar = (imageUrl) => {
-        this.state.user
+        this.props.currentUser
             .updateProfile({
                 photoURL: imageUrl,
             })
@@ -105,7 +105,7 @@ class UserPanel extends Component {
             .catch((err) => console.error("err :", err));
 
         this.state.usersRef
-            .child(this.state.user?.uid)
+            .child(this.props.currentUser?.uid)
             .update({ avatar: imageUrl })
             .then(() => {
                 console.log("user avatar updated");
@@ -135,8 +135,8 @@ class UserPanel extends Component {
     };
 
     render() {
-        const { primary } = this.props;
-        const { modal, previewImage, croppedImage, user } = this.state;
+        const { currentUser, primary } = this.props;
+        const { modal, previewImage, croppedImage } = this.state;
         return (
             <Grid style={{ background: primary, fontSize: "1.2rem" }}>
                 <Grid.Column>
@@ -151,11 +151,15 @@ class UserPanel extends Component {
                                 trigger={
                                     <span>
                                         <Image
-                                            src={user?.photoURL}
+                                            src={
+                                                currentUser?.photoURL
+                                                    ? currentUser.photoURL
+                                                    : noUserImg
+                                            }
                                             spaced="right"
                                             avatar
                                         />
-                                        {user?.displayName}
+                                        {currentUser?.displayName}
                                     </span>
                                 }
                                 options={this.dropDownOptions()}
@@ -227,5 +231,9 @@ class UserPanel extends Component {
         );
     }
 }
+const mapStateToProps = (state) => ({
+    currentUser: state.user.currentUser,
+    primary: state.colors.primary,
+});
 
-export default UserPanel;
+export default connect(mapStateToProps)(UserPanel);

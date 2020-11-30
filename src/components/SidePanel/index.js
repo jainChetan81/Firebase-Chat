@@ -16,7 +16,7 @@ function SidePanel({ currentUser, primary }) {
                 background: primary ? primary : "",
                 fontSize: "1.2rem",
             }}>
-            <UserPanel primary={primary} currentUser={currentUser} />
+            <UserPanel primary={primary} />
             <StarredComponent currentUser={currentUser} />
             <Channels currentUser={currentUser} />
             <DirectMessages currentUser={currentUser} />

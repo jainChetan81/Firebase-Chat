@@ -59,5 +59,3 @@ ReactDOM.render(
 );
 
 //TODO:avatar storage problems
-
-//TODO:search results don't reset when changing channels or dm's

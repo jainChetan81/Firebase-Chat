@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "axios": "^0.21.0",
         "emoji-mart": "^3.0.0",
         "firebase": "^7.21.1",
         "md5": "^2.3.0",
