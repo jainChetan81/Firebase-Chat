@@ -8,18 +8,24 @@ class DirectMessages extends Component {
     state = {
         users: [],
         activeChannel: "",
+        user: this.props.currentUser,
         usersRef: firebase.database().ref("users"),
         connectedRef: firebase.database().ref(".info/connected"),
         presenceRef: firebase.database().ref("presence"),
     };
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log("cdm in direct messages");
         const { currentUser } = this.props;
         if (currentUser !== prevProps.currentUser) {
-            // console.log("current user is found");
-            if (currentUser) this.addListeners(currentUser?.uid);
+            if (currentUser) {
+                this.setState({ user: currentUser });
+                this.addListeners(currentUser?.uid);
+            }
         }
+    }
+
+    componentDidMount() {
+        if (this.state.user) this.addListeners(this.state.user.uid);
     }
 
     componentWillUnmount() {
@@ -96,7 +102,7 @@ class DirectMessages extends Component {
     };
 
     getChannelId = (uid) => {
-        const currenUserId = this.props.currentUser?.uid;
+        const currenUserId = this.state.user?.uid;
         return uid < currenUserId
             ? `${uid}/${currenUserId}`
             : `${currenUserId}/${uid}`;
@@ -133,11 +139,7 @@ class DirectMessages extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    currentUser: state.user.currentUser,
-});
-
-export default connect(mapStateToProps, {
+export default connect(null, {
     setCurrentChannel,
     setPrivateChannel,
 })(DirectMessages);

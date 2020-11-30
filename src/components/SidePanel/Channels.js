@@ -17,6 +17,7 @@ class Channels extends Component {
     state = {
         channels: [],
         activeChannel: "",
+        user: this.props.currentUser,
         modal: false,
         channelName: "",
         channelDetails: "",
@@ -30,12 +31,6 @@ class Channels extends Component {
 
     componentDidMount() {
         this.addListeners();
-    }
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        console.log("cdm in channels");
-        const { currentUser } = this.props;
-        if (currentUser !== prevProps.currentUser)
-            console.log("current user is found in channels", currentUser);
     }
 
     componentWillUnmount() {
@@ -120,7 +115,7 @@ class Channels extends Component {
         if (this.props.channel)
             this.state.typingRef
                 .child(this.props.channel.id)
-                .child(this.props.currentUser?.uid)
+                .child(this.state.user?.uid)
                 .remove();
         this.props.setPrivateChannel(false);
         this.setState({ activeChannel: channel.id, channel, channelName: "" }); //set active channel
@@ -147,8 +142,8 @@ class Channels extends Component {
             name: channelName,
             details: channelDetails,
             createdBy: {
-                name: this.props.currentUser.displayName,
-                avatar: this.props.currentUser.photoURL,
+                name: this.state.user.displayName,
+                avatar: this.state.user.photoURL,
             },
         };
         channelsRef

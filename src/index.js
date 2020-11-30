@@ -60,6 +60,6 @@ ReactDOM.render(
 
 //TODO:avatar storage problems
 
-//TODO: props not loading(starredcomp, direct message, colorpanel) not working when logging only
+//TODO: props not loading(starredcomp, ) not working when logging only
 
 //TODO:search results doesn't reset when changing channels or dm's
